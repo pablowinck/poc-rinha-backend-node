@@ -1,0 +1,359 @@
+{
+	"info": {
+		"_postman_id": "01b1e665-bacc-45cc-8ff3-27ed7c1f70c7",
+		"name": "POC Rinha Backend - Node",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20822366"
+	},
+	"item": [
+		{
+			"name": "busca por termo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Pegar a resposta em formato JSON",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Verificar se o termo de busca aparece em algum campo dos objetos retornados",
+							"const termoBusca = pm.environment.get('termoBusca');",
+							"",
+							"jsonData.forEach((pessoa) => {",
+							"    let encontrado = false;",
+							"    Object.keys(pessoa).forEach((campo) => {",
+							"        if (typeof pessoa[campo] === 'string' && pessoa[campo].includes(termoBusca)) {",
+							"            encontrado = true;",
+							"        }",
+							"    });",
+							"    if (encontrado) {",
+							"        pm.test(`Termo de busca '${termoBusca}' encontrado em pelo menos um campo do objeto`, () => {",
+							"            pm.expect(encontrado).to.eql(true);",
+							"        });",
+							"    }",
+							"});",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"id is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (pessoa) {",
+							"        pm.expect(pessoa.id).to.be.a('string').and.to.have.lengthOf.at.least(1);",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Função para gerar um número inteiro aleatório entre min e max",
+							"function getRandomInt(min, max) {",
+							"    return Math.floor(Math.random() * (max - min + 1)) + min;",
+							"}",
+							"",
+							"// Função para escolher um item aleatório de um array",
+							"function getRandomItem(arr) {",
+							"    return arr[getRandomInt(0, arr.length - 1)];",
+							"}",
+							"",
+							"// Dados para geração aleatória",
+							"const nomes = ['John Doe', 'Mary Jane', 'Susan Smith', 'Mike Brown', 'Jessica Lee'];",
+							"const apelidos = ['john', 'mary', 'susan', 'mike', 'jessica'];",
+							"const stacks = ['Node', 'Python', 'Ruby', 'Java', 'Go', 'C++', 'C#'];",
+							"",
+							"// Gerando dados aleatórios",
+							"const nomeAleatorio = getRandomItem(nomes);",
+							"const apelidoAleatorio = getRandomItem(apelidos);",
+							"const stackAleatorio = [getRandomItem(stacks), getRandomItem(stacks)];",
+							"",
+							"// Configurando termo de busca aleatório a partir dos dados gerados",
+							"const campos = [nomeAleatorio, apelidoAleatorio, ...stackAleatorio];",
+							"const termoBusca = getRandomItem(campos);",
+							"",
+							"// Configurando a variável ambiente para o termo de busca",
+							"pm.environment.set('termoBusca', termoBusca);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/pessoas?t={{termoBusca}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"pessoas"
+					],
+					"query": [
+						{
+							"key": "t",
+							"value": "{{termoBusca}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contagem pessoas",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifique se o status da resposta é 200 OK",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifique se a resposta é rápida (tempo de resposta abaixo de 500ms, por exemplo)",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"// Verifique se o corpo da resposta é do tipo JSON",
+							"pm.test(\"Response should be JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Verifique se a contagem é um número",
+							"pm.test(\"Count should be a number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(typeof jsonData.count).to.eql('number');",
+							"});",
+							"",
+							"// Verifique se a contagem é maior ou igual a zero",
+							"pm.test(\"Count should be greater than or equal to zero\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.count).to.be.at.least(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/contagem-pessoas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"contagem-pessoas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "busca por id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Simula uma lista de IDs que você sabe que estão no banco de dados",
+							"const availableIDs = ['c645112e-457e-44cb-90e0-c968a019ad4c', '50e339eb-63a6-4309-ab6d-be745a75c315', 'e3318e73-9e21-4a78-b923-69e3d05741e5'];",
+							"",
+							"// Escolha um ID aleatório dessa lista",
+							"const randomID = availableIDs[Math.floor(Math.random() * availableIDs.length)];",
+							"",
+							"// Define a variável para ser usada na URL da requisição",
+							"pm.environment.set(\"randomID\", randomID);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifique se o status da resposta é 200 OK",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Verifique se a resposta é rápida (tempo de resposta abaixo de 500ms, por exemplo)",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"// Verifique se o corpo da resposta é do tipo JSON",
+							"pm.test(\"Response should be JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Verifique se o id retornado corresponde ao id solicitado",
+							"pm.test(\"Returned ID should match requested ID\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.eql(pm.environment.get(\"randomID\"));",
+							"});",
+							"",
+							"// (Opcional) Verifique outros campos, como nome, apelido, etc.",
+							"pm.test(\"Returned fields are valid\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.nome).to.be.a('string');",
+							"    pm.expect(jsonData.apelido).to.be.a('string');",
+							"    pm.expect(jsonData.nascimento).to.match(/\\d{4}-\\d{2}-\\d{2}/);  // formato YYYY-MM-DD",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/pessoas/{{randomID}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"pessoas",
+						"{{randomID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cadastra pessoa",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Gerar apelido aleatório",
+							"const apelidos = ['john', 'mary', 'susan', 'mike', 'jessica'];",
+							"const apelidoAleatorio = apelidos[Math.floor(Math.random() * apelidos.length)] + Math.floor(Math.random() * 1000000);",
+							"",
+							"// Gerar nome aleatório",
+							"const nomes = ['John Doe', 'Mary Jane', 'Susan Smith', 'Mike Brown', 'Jessica Lee'];",
+							"const nomeAleatorio = nomes[Math.floor(Math.random() * nomes.length)];",
+							"",
+							"// Gerar data de nascimento aleatória entre 1970 e 2000",
+							"const ano = Math.floor(Math.random() * (2000 - 1970 + 1) + 1970);",
+							"const mes = String(Math.floor(Math.random() * (12 - 1 + 1) + 1)).padStart(2, '0');",
+							"const dia = String(Math.floor(Math.random() * (28 - 1 + 1) + 1)).padStart(2, '0');",
+							"const nascimentoAleatorio = `${ano}-${mes}-${dia}`;",
+							"",
+							"// Gerar stack aleatória",
+							"const tecnologias = ['Node', 'Python', 'Ruby', 'Java', 'Go', 'C++', 'C#'];",
+							"const stackAleatorio = [];",
+							"const numTecnologias = Math.floor(Math.random() * (5 - 1 + 1) + 1);",
+							"",
+							"for (let i = 0; i < numTecnologias; i++) {",
+							"    const tecnologia = tecnologias[Math.floor(Math.random() * tecnologias.length)];",
+							"    if (!stackAleatorio.includes(tecnologia)) {",
+							"        stackAleatorio.push(tecnologia);",
+							"    }",
+							"}",
+							"",
+							"// Configurar o corpo da requisição com valores aleatórios",
+							"pm.environment.set('apelidoAleatorio', apelidoAleatorio);",
+							"pm.environment.set('nomeAleatorio', nomeAleatorio);",
+							"pm.environment.set('nascimentoAleatorio', nascimentoAleatorio);",
+							"pm.environment.set('stackAleatorio', JSON.stringify(stackAleatorio));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verifique se o status da resposta é 201 Created ou 200 OK, dependendo do que você espera",
+							"pm.test(\"Status code is 201 or 200\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);",
+							"});",
+							"",
+							"// Verifique se a resposta é rápida (tempo de resposta abaixo de 500ms, por exemplo)",
+							"pm.test(\"Response time is less than 500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);",
+							"});",
+							"",
+							"// Verifique se o corpo da resposta é do tipo JSON",
+							"pm.test(\"Response should be JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Verifique se o corpo da resposta contém um ID, o que significa que um recurso foi criado",
+							"pm.test(\"Response must have an ID\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.be.a('string');",
+							"    pm.expect(jsonData.id).to.not.be.empty;",
+							"});",
+							"",
+							"// (Opcional) Verifique outros campos que devem ser retornados pela API",
+							"pm.test(\"Response should have all the expected fields\", function () {",
+							"    const jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.keys('id', 'apelido', 'nome', 'nascimento', 'stack');",
+							"",
+							"    pm.expect(jsonData.apelido).to.be.a('string');",
+							"    pm.expect(jsonData.nome).to.be.a('string');",
+							"    pm.expect(jsonData.nascimento).to.match(/\\d{4}-\\d{2}-\\d{2}/); // formato YYYY-MM-DD",
+							"    pm.expect(jsonData.stack).to.be.an('array');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"apelido\": \"{{apelidoAleatorio}}\",\n    \"nome\": \"{{nomeAleatorio}}\",\n    \"nascimento\": \"{{nascimentoAleatorio}}\",\n    \"stack\": {{stackAleatorio}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/pessoas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"pessoas"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
