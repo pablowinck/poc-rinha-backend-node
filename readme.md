@@ -55,6 +55,15 @@ npm start
 
 Isso iniciará o servidor na porta 3000.
 
+### 6. Executar via Docker
+
+```bash
+docker build -t rinha-api .
+docker-compose up -d
+```
+
+Isso iniciará o servidor o nginx 9999.
+
 ## Endpoints
 
 ### Criação de Pessoas (POST /pessoas)
