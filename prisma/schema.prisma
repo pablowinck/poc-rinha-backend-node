@@ -12,8 +12,13 @@ datasource db {
 
 model User {
   id         String   @id @default(uuid())
-  apelido    String   @unique @db.VarChar(32)
+  apelido    String   @unique @db.VarChar(33)
   nome       String   @db.VarChar(100)
-  nascimento DateTime
-  stack      String[]
+  nascimento DateTime @db.Date
+  stack      String?  @db.Text
+
+  @@index([apelido, nome, stack])
+  @@index([apelido])
+  @@index([nome])
+  @@index([stack])
 }

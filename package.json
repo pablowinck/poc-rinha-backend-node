@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch index.js"
+    "start": "node --watch index.js",
+    "down": "docker-compose down --volumes",
+    "build-up": "yarn down && yarn publish:api && docker-compose up -d && ./healthcheck.sh",
+    "publish:ngnix": "docker build -t pablowinck/custom-ngnix:1.0 -f Dockerfile.ngnix . && docker push pablowinck/custom-ngnix:1.0",
+    "publish:api": "docker build -t pablowinck/rinha-api:1.0 -f Dockerfile.api . && docker push pablowinck/rinha-api:1.0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.2.0"
+    "@prisma/client": "^5.3.0"
   }
 }
